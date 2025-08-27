@@ -695,8 +695,10 @@ public class CDFMLSaxDataSource extends AbstractDataSource implements Metadata, 
 	public Analysis getAnalysis() {
 		return this.analysis;
 	}
-	
 
 
-	
+	@Override
+	public void close() throws Exception {
+		// No-op -- this plugin manages its own scan data (for better or worse)
+	}
 }

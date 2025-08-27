@@ -882,6 +882,10 @@ public class MapXYVespersToPDSConverter extends AbstractMapXYVespersConverter im
 		throw new DataSourceReadException("Operation not supported", new OperationNotSupportedException());
 	}
 
+	@Override
+	public void close() throws Exception {
+		// No-op -- this plugin manages its own scan data (for better or worse)
+	}
 
 
 	// Others DSMetadata methods implemented by super-class //

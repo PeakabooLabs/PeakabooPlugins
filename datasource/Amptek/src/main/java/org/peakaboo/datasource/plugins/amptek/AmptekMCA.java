@@ -16,6 +16,7 @@ import org.peakaboo.dataset.source.model.components.fileformat.SimpleFileFormat;
 import org.peakaboo.dataset.source.model.components.metadata.Metadata;
 import org.peakaboo.dataset.source.model.components.physicalsize.PhysicalSize;
 import org.peakaboo.dataset.source.model.components.scandata.ScanData;
+import org.peakaboo.dataset.source.model.components.scandata.SimpleScanData;
 import org.peakaboo.dataset.source.model.components.scandata.analysis.Analysis;
 import org.peakaboo.dataset.source.plugin.AbstractDataSource;
 import org.peakaboo.framework.autodialog.model.Group;
@@ -25,11 +26,9 @@ import org.peakaboo.tier.Tier;
 
 
 
-public class AmptekMCA extends AbstractDataSource implements ScanData {
+public class AmptekMCA extends AbstractDataSource {
 
-	private Spectrum spectrum;
-	private String scanName; 
-	private Analysis analysis;
+	private SimpleScanData scanData;
 	
 	
 	public AmptekMCA() {
@@ -46,55 +45,16 @@ public class AmptekMCA extends AbstractDataSource implements ScanData {
 		return "fe4f9def-9cf9-46b8-b460-bbde62a6f144";
 	}
 	
-	private Spectrum readMCA(DataInputAdapter file) throws IOException
-	{
-	
-		List<String> lines = IOUtils.readLines(file.getInputStream()); 
+	private Spectrum readMCA(DataInputAdapter file) throws IOException {
+		List<String> lines = IOUtils.readLines(file.getInputStream());
 		
 		int startIndex = lines.indexOf("<<DATA>>") + 1;
 		int endIndex = lines.indexOf("<<END>>");
-		
+
 		Spectrum s = new ArraySpectrum(lines.subList(startIndex, endIndex).stream().map(line -> Float.parseFloat(line)).collect(toList()));
-		
-		analysis = Tier.provider().createDataSourceAnalysis();
-		analysis.process(s);
-		
+
 		return s;
-		
 	}
-	
-	@Override
-	public Spectrum get(int index) {
-		if (index != 0) return null;
-		return spectrum;
-	}
-
-	@Override
-	public int scanCount() {
-		return 1;
-	}
-
-	@Override
-	public String scanName(int index) {
-		return "Scan #" + (index+1);
-	}
-
-
-	@Override
-	public float maxEnergy() {
-		return 0;
-	}
-
-	@Override
-	public float minEnergy() {
-		return 0;
-	}
-	
-	@Override
-	public String datasetName() {
-		return scanName;
-	}
-
 	
 	@Override
 	public FileFormat getFileFormat() {
@@ -103,16 +63,12 @@ public class AmptekMCA extends AbstractDataSource implements ScanData {
 	
 	@Override
 	public ScanData getScanData() {
-		return this;
+		return scanData;
 	}
 
-	
-	
-
-	public void read(DataInputAdapter file) throws IOException
-	{
-		spectrum = readMCA(file);
-		scanName = file.getFilename();
+	public void read(DataInputAdapter file) throws IOException {
+		scanData = new SimpleScanData(file.getFilename());
+		scanData.add(readMCA(file));
 	}
 
 	@Override
@@ -126,9 +82,7 @@ public class AmptekMCA extends AbstractDataSource implements ScanData {
 		read(files.get(0));
 	}
 
-	
 
-	
 	//==============================================
 	// UNSUPPORTED FEATURES
 	//==============================================
@@ -139,7 +93,6 @@ public class AmptekMCA extends AbstractDataSource implements ScanData {
 		return Optional.empty();
 	}
 
-	
 	@Override
 	public Optional<Metadata> getMetadata() {
 		return Optional.empty();
@@ -155,11 +108,4 @@ public class AmptekMCA extends AbstractDataSource implements ScanData {
 		return Optional.empty();
 	}
 
-	@Override
-	public Analysis getAnalysis() {
-		return this.analysis;
-	}
-
-
-	
 }
