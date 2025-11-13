@@ -60,6 +60,10 @@ public class XlsxDataSourcePlugin extends AbstractDataSource {
 		void acceptScan(int index, Spectrum spectrum) throws IOException, InterruptedException;
 	}
 	
+	public XlsxDataSourcePlugin() {
+	
+	}
+	
 	@Override
 	public void read(DataSourceContext ctx) throws DataSourceReadException, IOException, InterruptedException {
 		
