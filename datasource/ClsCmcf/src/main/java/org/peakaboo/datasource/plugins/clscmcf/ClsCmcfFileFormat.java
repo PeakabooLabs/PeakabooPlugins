@@ -14,7 +14,7 @@ import org.peakaboo.app.PeakabooLog;
 import org.peakaboo.dataset.io.DataInputAdapter;
 import org.peakaboo.dataset.source.model.components.fileformat.FileFormat;
 import org.peakaboo.dataset.source.model.components.fileformat.FileFormatCompatibility;
-import org.peakaboo.framework.bolt.plugin.core.AlphaNumericComparitor;
+import org.peakaboo.framework.accent.AlphaNumericComparitor;
 
 public class ClsCmcfFileFormat implements FileFormat {
 

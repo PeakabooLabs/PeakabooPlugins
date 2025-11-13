@@ -13,8 +13,8 @@ import java.util.function.Supplier;
 import org.peakaboo.dataset.io.DataInputAdapter;
 import org.peakaboo.dataset.source.model.DataSourceReadException;
 import org.peakaboo.dataset.source.model.PeakabooLists;
-import org.peakaboo.framework.cyclops.Pair;
-import org.peakaboo.framework.cyclops.Range;
+import org.peakaboo.framework.accent.Pair;
+import org.peakaboo.framework.accent.numeric.Range;
 import org.peakaboo.framework.cyclops.SparsedList;
 import org.peakaboo.framework.cyclops.spectrum.ArraySpectrum;
 import org.peakaboo.framework.cyclops.spectrum.Spectrum;
@@ -160,7 +160,7 @@ public abstract class CDFMLReader extends DefaultHandler2
 			String varName = getTagAttribute(CDFMLStrings.TAG_VAR, CDFMLStrings.XML_ATTR_NAME);
 			
 			Map<String, String> attsMap = new HashMap<String, String>(12);
-			for (Integer i : new Range(0, atts.getLength()))
+			for (Integer i : new Range(0, atts.getLength()-1))
 			{
 				attsMap.put(atts.getQName(i), atts.getValue(i));
 			}

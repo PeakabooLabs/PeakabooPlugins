@@ -9,7 +9,7 @@ import org.peakaboo.dataset.source.model.components.physicalsize.PhysicalSize;
 import org.peakaboo.dataset.source.model.components.physicalsize.SimplePhysicalSize;
 import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.FloatMatrixHDF5DataSource;
 import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.SimpleHDF5FileFormat;
-import org.peakaboo.framework.cyclops.Coord;
+import org.peakaboo.framework.accent.Coord;
 import org.peakaboo.framework.cyclops.SISize;
 
 import ch.systemsx.cisd.hdf5.IHDF5Reader;

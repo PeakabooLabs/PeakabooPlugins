@@ -16,8 +16,8 @@ import org.peakaboo.dataset.source.model.components.physicalsize.PhysicalSize;
 import org.peakaboo.dataset.source.model.components.scandata.PipelineScanData;
 import org.peakaboo.dataset.source.model.components.scandata.ScanData;
 import org.peakaboo.dataset.source.plugin.AbstractDataSource;
+import org.peakaboo.framework.accent.AlphaNumericComparitor;
 import org.peakaboo.framework.autodialog.model.Group;
-import org.peakaboo.framework.bolt.plugin.core.AlphaNumericComparitor;
 import org.peakaboo.framework.cyclops.spectrum.ArraySpectrum;
 import org.peakaboo.framework.cyclops.spectrum.Spectrum;
 
@@ -66,7 +66,7 @@ public class Sigray2018HDF5 extends AbstractDataSource {
 		dataSize.setDataHeight(dy);
 		dataSize.setDataWidth(dx);
 	
-		Comparator<String> comparitor = new AlphaNumericComparitor(); 
+		Comparator<String> comparitor = new AlphaNumericComparitor();
 		paths.sort((a, b) -> comparitor.compare(a.getFilename(), b.getFilename()));
 		int index = 0;
 		for (DataInputAdapter path : paths) {
