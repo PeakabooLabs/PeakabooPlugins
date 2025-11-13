@@ -151,7 +151,7 @@ public class XlsxDataSourcePlugin extends AbstractDataSource {
 
 	@Override
 	public FileFormat getFileFormat() {
-		return new SimpleFileFormat(true, "Excel (Office Open XML)", "Microsoft-developed file format for spreadsheets", List.of("xlsx"));
+		return new SimpleFileFormat(true, "Excel - Office Open XML", "Microsoft-developed file format for spreadsheets", List.of("xlsx"));
 	}
 
 	@Override
