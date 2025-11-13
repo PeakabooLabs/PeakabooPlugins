@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.peakaboo.plugins</groupId>
 		<artifactId>datasource</artifactId>
-		<version>6.1-SNAPSHOT</version>
+		<version>6.1</version>
 	</parent>
 	<artifactId>GenericJHDF</artifactId>
 	<packaging>jar</packaging>
