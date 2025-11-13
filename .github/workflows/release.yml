@@ -1,7 +1,13 @@
 name: Build Plugins Release
 run-name: Packaging Peakaboo Plugins ${{ github.ref_name }} for Release
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      peakaboo_branch:
+        required: true
+        type: string
+        default: master
 
 jobs:
   build:
@@ -24,7 +30,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         repository: nsherry4/Peakaboo
-        ref: master
+        ref: ${{ inputs.peakaboo_branch || 'master' }}
         path: ./Peakaboo
 
     - name: Install base Peakaboo to Maven's local package store
