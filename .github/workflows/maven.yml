@@ -5,6 +5,12 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_call:
+    inputs:
+      peakaboo_branch:
+        required: true
+        type: string
+        default: master
 
 jobs:
   build:
@@ -25,7 +31,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         repository: nsherry4/Peakaboo
-        ref: master
+        ref: ${{ inputs.peakaboo_branch || 'master' }}
         path: ./Peakaboo
 
     - name: Install base Peakaboo to Maven's local package store
