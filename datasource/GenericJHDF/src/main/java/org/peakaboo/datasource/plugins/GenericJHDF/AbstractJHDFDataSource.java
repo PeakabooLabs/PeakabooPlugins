@@ -15,8 +15,8 @@ import org.peakaboo.dataset.source.model.components.physicalsize.PhysicalSize;
 import org.peakaboo.dataset.source.model.components.scandata.PipelineScanData;
 import org.peakaboo.dataset.source.model.components.scandata.ScanData;
 import org.peakaboo.dataset.source.plugin.AbstractDataSource;
+import org.peakaboo.framework.accent.AlphaNumericComparitor;
 import org.peakaboo.framework.autodialog.model.Group;
-import org.peakaboo.framework.bolt.plugin.core.AlphaNumericComparitor;
 import org.peakaboo.framework.cyclops.spectrum.Spectrum;
 
 import io.jhdf.HdfFile;

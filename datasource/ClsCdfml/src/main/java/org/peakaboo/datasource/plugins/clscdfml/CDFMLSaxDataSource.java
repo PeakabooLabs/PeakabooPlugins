@@ -23,10 +23,10 @@ import org.peakaboo.dataset.source.model.components.physicalsize.PhysicalSize;
 import org.peakaboo.dataset.source.model.components.scandata.ScanData;
 import org.peakaboo.dataset.source.model.components.scandata.analysis.Analysis;
 import org.peakaboo.dataset.source.plugin.AbstractDataSource;
+import org.peakaboo.framework.accent.Coord;
+import org.peakaboo.framework.accent.numeric.Bounds;
+import org.peakaboo.framework.accent.numeric.Range;
 import org.peakaboo.framework.autodialog.model.Group;
-import org.peakaboo.framework.cyclops.Bounds;
-import org.peakaboo.framework.cyclops.Coord;
-import org.peakaboo.framework.cyclops.Range;
 import org.peakaboo.framework.cyclops.SISize;
 import org.peakaboo.framework.cyclops.spectrum.ArraySpectrum;
 import org.peakaboo.framework.cyclops.spectrum.Spectrum;
@@ -208,7 +208,7 @@ public class CDFMLSaxDataSource extends AbstractDataSource implements Metadata, 
 			
 			
 			s = new ArraySpectrum(getScan(0, 0).size(), 0f);
-			for (Integer i : new Range(0, numElements()))
+			for (Integer i : new Range(0, numElements() - 1))
 			{
 				
 				s2 = getScan(i, index);

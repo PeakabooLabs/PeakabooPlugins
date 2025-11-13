@@ -14,7 +14,7 @@ import org.peakaboo.dataset.source.model.components.datasize.SimpleDataSize;
 import org.peakaboo.dataset.source.model.components.physicalsize.PhysicalSize;
 import org.peakaboo.dataset.source.model.components.physicalsize.SimplePhysicalSize;
 import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.SimpleHDF5DataSource;
-import org.peakaboo.framework.cyclops.Coord;
+import org.peakaboo.framework.accent.Coord;
 import org.peakaboo.framework.cyclops.SISize;
 import org.peakaboo.framework.cyclops.spectrum.ArraySpectrum;
 
