@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.peakaboo.app.PeakabooLog;
 import org.peakaboo.dataset.io.DataInputAdapter;
 import org.peakaboo.dataset.source.model.DataSourceReadException;
 import org.peakaboo.dataset.source.model.components.datasize.DataSize;
@@ -24,6 +23,7 @@ import org.peakaboo.dataset.source.model.components.scandata.ScanData;
 import org.peakaboo.dataset.source.model.components.scandata.analysis.Analysis;
 import org.peakaboo.dataset.source.plugin.AbstractDataSource;
 import org.peakaboo.framework.accent.Coord;
+import org.peakaboo.framework.accent.log.OneLog;
 import org.peakaboo.framework.accent.numeric.Bounds;
 import org.peakaboo.framework.accent.numeric.Range;
 import org.peakaboo.framework.autodialog.model.Group;
@@ -596,7 +596,7 @@ public class CDFMLSaxDataSource extends AbstractDataSource implements Metadata, 
 			
 		}
 		catch (Exception e){
-			PeakabooLog.get().log(Level.SEVERE, "Failed to read file", e);
+			OneLog.log(Level.SEVERE, "Failed to read file", e);
 		}
 		
 		return FileFormatCompatibility.NO;

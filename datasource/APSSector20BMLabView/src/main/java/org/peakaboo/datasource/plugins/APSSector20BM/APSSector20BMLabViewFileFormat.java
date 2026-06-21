@@ -8,10 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.peakaboo.app.PeakabooLog;
 import org.peakaboo.dataset.io.DataInputAdapter;
 import org.peakaboo.dataset.source.model.components.fileformat.FileFormat;
 import org.peakaboo.dataset.source.model.components.fileformat.FileFormatCompatibility;
+import org.peakaboo.framework.accent.log.OneLog;
 
 public class APSSector20BMLabViewFileFormat implements FileFormat {
 
@@ -51,7 +51,7 @@ public class APSSector20BMLabViewFileFormat implements FileFormat {
 			}
 			
 		} catch (IOException e) {
-			PeakabooLog.get().log(Level.WARNING, "Failed to inspect file(s)", e);
+			OneLog.log(Level.WARNING, "Failed to inspect file(s)", e);
 			return FileFormatCompatibility.NO;
 		}
 		

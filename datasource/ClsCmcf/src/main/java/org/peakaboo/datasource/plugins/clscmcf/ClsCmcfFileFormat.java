@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.peakaboo.app.PeakabooLog;
 import org.peakaboo.dataset.io.DataInputAdapter;
 import org.peakaboo.dataset.source.model.components.fileformat.FileFormat;
 import org.peakaboo.dataset.source.model.components.fileformat.FileFormatCompatibility;
 import org.peakaboo.framework.accent.AlphaNumericComparitor;
+import org.peakaboo.framework.accent.log.OneLog;
 
 public class ClsCmcfFileFormat implements FileFormat {
 
@@ -59,7 +59,7 @@ public class ClsCmcfFileFormat implements FileFormat {
 			return FileFormatCompatibility.YES_BY_CONTENTS;
 			
 		} catch (IOException e) {
-			PeakabooLog.get().log(Level.WARNING, "Failed to inspect file", e);
+			OneLog.log(Level.WARNING, "Failed to inspect file", e);
 			return FileFormatCompatibility.NO;
 		}
 	}

@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
-import org.peakaboo.app.PeakabooLog;
 import org.peakaboo.dataset.io.DataInputAdapter;
 import org.peakaboo.dataset.source.model.components.datasize.DataSize;
 import org.peakaboo.dataset.source.model.components.datasize.SimpleDataSize;
 import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.FloatMatrixHDF5DataSource;
+import org.peakaboo.framework.accent.log.OneLog;
 import org.peakaboo.framework.autodialog.model.Group;
 import org.peakaboo.framework.autodialog.model.Parameter;
 import org.peakaboo.framework.autodialog.model.SelectionParameter;
@@ -72,7 +72,7 @@ public class CHESS extends FloatMatrixHDF5DataSource  {
 			}
 			return dataPaths;
 		} catch (IOException e) {
-			PeakabooLog.get().log(Level.SEVERE, "Failed to detect data paths", e);
+			OneLog.log(Level.SEVERE, "Failed to detect data paths", e);
 			return List.of();
 		}
 	}
@@ -91,7 +91,7 @@ public class CHESS extends FloatMatrixHDF5DataSource  {
 			
 			return dataPaths;
 		} catch (IOException e) {
-			PeakabooLog.get().log(Level.SEVERE, "Failed to detect data paths", e);
+			OneLog.log(Level.SEVERE, "Failed to detect data paths", e);
 			return List.of();
 		}
 	}
@@ -108,7 +108,7 @@ public class CHESS extends FloatMatrixHDF5DataSource  {
 			}
 			return validRoots;
 		} catch (IOException e) {
-			PeakabooLog.get().log(Level.SEVERE, "Failed to detect data path roots", e);
+			OneLog.log(Level.SEVERE, "Failed to detect data path roots", e);
 			return List.of();
 		}
 	}
@@ -133,7 +133,7 @@ public class CHESS extends FloatMatrixHDF5DataSource  {
 			size.setDataWidth(x);
 			size.setDataHeight(y);
 		} catch (IOException e) {
-			PeakabooLog.get().log(Level.SEVERE, "Failed to determine data size", e);
+			OneLog.log(Level.SEVERE, "Failed to determine data size", e);
 			//Can we do better here? Optional?
 			return new SimpleDataSize();
 		}
