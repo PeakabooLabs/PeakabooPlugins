@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.peakaboo.plugins</groupId>
+		<artifactId>plugins</artifactId>
+		<version>6.2-SNAPSHOT</version>
+	</parent>
+	<artifactId>launcher</artifactId>
+	<packaging>jar</packaging>
+
+	<name>launcher</name>
+	<url>http://maven.apache.org</url>
+
+	<dependencies>
+		<!-- Peakaboo Swing application (pulls in libpeakaboo + UI transitively) -->
+		<dependency>
+			<groupId>org.peakaboo</groupId>
+			<artifactId>peakaboo-swing</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- The parent pom declares libpeakaboo as 'provided', which this module would
+		     otherwise inherit as a direct provided dependency. That keeps it off the run
+		     classpath (e.g. IntelliJ excludes provided scope by default, causing
+		     NoClassDefFoundError on org.peakaboo.tier.*). Override it to compile so the
+		     launcher can actually run. -->
+		<dependency>
+			<groupId>org.peakaboo</groupId>
+			<artifactId>libpeakaboo</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- All plugin modules in this repo, so their classes + META-INF/services
+		     entries are on the classpath for ServiceLoader discovery. -->
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>amptek</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>APS8BM</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>APSSector11</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>APSSector20</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>APSSector20BMLabView</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>CHESS</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>ClsCdfml</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>ClsCmcf</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>GenericJHDF</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>Horiba5200</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>Inca</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>Raw</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>Sigray</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>Vespers</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.peakaboo.plugins</groupId>
+			<artifactId>xlsx</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>21</source>
+					<target>21</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<mainClass>org.peakaboo.plugins.launcher.PluginsLauncher</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

@@ -13,6 +13,7 @@
 
 	<modules>
 		<module>datasource</module>
+		<module>launcher</module>
 	</modules>
 
 	<dependencies>
