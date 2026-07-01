@@ -10,6 +10,7 @@ import org.peakaboo.dataset.io.DataInputAdapter;
 import org.peakaboo.dataset.source.model.components.datasize.DataSize;
 import org.peakaboo.dataset.source.model.components.datasize.SimpleDataSize;
 import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.FloatMatrixHDF5DataSource;
+import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.HDFReader;
 import org.peakaboo.framework.accent.log.OneLog;
 import org.peakaboo.framework.autodialog.model.Group;
 import org.peakaboo.framework.autodialog.model.Parameter;
@@ -19,9 +20,6 @@ import org.peakaboo.framework.autodialog.model.style.editors.DropDownStyle;
 import org.peakaboo.framework.cyclops.spectrum.ArraySpectrum;
 import org.peakaboo.framework.cyclops.spectrum.Spectrum;
 import org.peakaboo.framework.cyclops.spectrum.SpectrumCalculations;
-
-import ch.systemsx.cisd.hdf5.HDF5DataSetInformation;
-import ch.systemsx.cisd.hdf5.IHDF5Reader;
 
 public class CHESS extends FloatMatrixHDF5DataSource  {
 
@@ -61,7 +59,7 @@ public class CHESS extends FloatMatrixHDF5DataSource  {
 		//user has not been prompted to make selection yet, so we list all valid data paths
 		if (root == null) { return allDataPaths(path); }
 		
-		try (IHDF5Reader reader = getReader(path)) {
+		try (HDFReader reader = getReader(path)) {
 			List<String> dataPaths = new ArrayList<>();
 			String rootPath = root.getValue();
 			for (String pathEnd : PATH_ENDS) {
@@ -78,7 +76,7 @@ public class CHESS extends FloatMatrixHDF5DataSource  {
 	}
 	
 	public List<String> allDataPaths(DataInputAdapter path) {
-		try (IHDF5Reader reader = getReader(path)) {
+		try (HDFReader reader = getReader(path)) {
 			List<String> dataPaths = new ArrayList<>();
 			for (String rootName : validRoots(path)) {
 				for (String pathEnd : PATH_ENDS) {
@@ -97,9 +95,9 @@ public class CHESS extends FloatMatrixHDF5DataSource  {
 	}
 	
 	private static List<String> validRoots(DataInputAdapter path) {
-		try (IHDF5Reader reader = getReader(path)) {
+		try (HDFReader reader = getReader(path)) {
 			List<String> validRoots = new ArrayList<>();
-			List<String> members = reader.getGroupMembers("/");
+			List<String> members = reader.groupMembers("/");
 			for (String member : members) {
 				String dataPath = "/" + member + "/measurement/vortex1/counts";
 				if (reader.exists(dataPath)) {
@@ -113,32 +111,34 @@ public class CHESS extends FloatMatrixHDF5DataSource  {
 		}
 	}
 	
+	
 	@Override
-	protected DataSize getDataSize(DataInputAdapter path, HDF5DataSetInformation datasetInfo) {
+	protected DataSize getDataSize(List<DataInputAdapter> paths, HDFReader reader) {
 		SimpleDataSize size = new SimpleDataSize();
-		try (IHDF5Reader reader = getReader(path)) {
-			//get the y-position array, and assume that the value doesn't change
-			//while scanning a single row
-			String samzPath = root.getValue() + "/measurement/scalar_data/samz";
-			float[] samz = reader.readFloatArray(samzPath);
-			float first = samz[0];
-			//find the first change, this will give us our width
-			int x = 1;
-			for (; x < samz.length; x++) {
-				if (samz[x] != first) break;
-			}
-			//integer division truncation should produce the same effect
-			//as taking the floor here
-			int y = samz.length / x;
-			size.setDataWidth(x);
-			size.setDataHeight(y);
-		} catch (IOException e) {
-			OneLog.log(Level.SEVERE, "Failed to determine data size", e);
-			//Can we do better here? Optional?
-			return new SimpleDataSize();
+		if (dataPaths.isEmpty()) { return size; }
+
+		//samz is the per-scan y-stage position, nested under the same numbered root as
+		//the counts data. Its value is constant across one scanned row, so the run length
+		//before the first change gives us the map width.
+		String samzPath = "/" + root.getValue() + "/measurement/scalar_data/samz";
+		float[] samz = reader.readFloatArray(samzPath);
+		if (samz.length == 0) { return size; }
+
+		float first = samz[0];
+		//find the first change, this will give us our width
+		int x = 1;
+		for (; x < samz.length; x++) {
+			if (samz[x] != first) break;
 		}
+		//integer division truncation should produce the same effect
+		//as taking the floor here, dropping any ragged final row
+		int y = samz.length / x;
+		size.setDataWidth(x);
+		size.setDataHeight(y);
+
 		return size;
 	}
+	
 	
 	public Optional<Group> getParameters(List<DataInputAdapter> datafiles) {
 		DataInputAdapter datafile = datafiles.get(0);
@@ -158,7 +158,7 @@ public class CHESS extends FloatMatrixHDF5DataSource  {
 		}
 	}
 
-	protected Spectrum getDeadtimes(String dataPath, IHDF5Reader reader) {
+	protected Spectrum getDeadtimes(String dataPath, HDFReader reader) {
 		if (deadtime.getValue()) {
 			String dir = dataPath.substring(0, dataPath.lastIndexOf("/"));
 			String deadtimePath = dir + "/dead_time";

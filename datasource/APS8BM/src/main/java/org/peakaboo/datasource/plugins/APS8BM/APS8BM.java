@@ -3,16 +3,15 @@ package org.peakaboo.datasource.plugins.APS8BM;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.peakaboo.dataset.source.model.components.datasize.DataSize;
 import org.peakaboo.dataset.source.model.components.fileformat.FileFormat;
 import org.peakaboo.dataset.source.model.components.physicalsize.PhysicalSize;
 import org.peakaboo.dataset.source.model.components.physicalsize.SimplePhysicalSize;
 import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.FloatMatrixHDF5DataSource;
+import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.HDFReader;
 import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.SimpleHDF5FileFormat;
 import org.peakaboo.framework.accent.Coord;
 import org.peakaboo.framework.cyclops.SISize;
 
-import ch.systemsx.cisd.hdf5.IHDF5Reader;
 
 public class APS8BM extends FloatMatrixHDF5DataSource {
 
@@ -46,7 +45,7 @@ public class APS8BM extends FloatMatrixHDF5DataSource {
 	}
 
 	@Override
-	protected void readMatrixMetadata(IHDF5Reader reader, int channels) {
+	protected void readMatrixMetadata(HDFReader reader, int channels) {
 		
 		int height = dataSize.getDataDimensions().y;
 		int width = dataSize.getDataDimensions().x;

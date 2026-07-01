@@ -3,153 +3,92 @@ package org.peakaboo.datasource.plugins.APSSector20;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 
 import org.peakaboo.dataset.io.DataInputAdapter;
-import org.peakaboo.dataset.source.model.DataSourceReadException;
-import org.peakaboo.dataset.source.model.components.datasize.DataSize;
-import org.peakaboo.dataset.source.model.components.datasize.SimpleDataSize;
+import org.peakaboo.dataset.source.model.components.fileformat.FileFormat;
 import org.peakaboo.dataset.source.model.components.physicalsize.PhysicalSize;
 import org.peakaboo.dataset.source.model.components.physicalsize.SimplePhysicalSize;
-import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.SimpleHDF5DataSource;
+import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.FloatMatrixHDF5DataSource;
+import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.HDFReader;
+import org.peakaboo.dataset.source.plugin.plugins.universalhdf5.SimpleHDF5FileFormat;
 import org.peakaboo.framework.accent.Coord;
+import org.peakaboo.framework.accent.log.OneLog;
 import org.peakaboo.framework.cyclops.SISize;
-import org.peakaboo.framework.cyclops.spectrum.ArraySpectrum;
 
-import ch.systemsx.cisd.base.mdarray.MDFloatArray;
-import ch.systemsx.cisd.hdf5.HDF5DataSetInformation;
-import ch.systemsx.cisd.hdf5.HDF5Factory;
-import ch.systemsx.cisd.hdf5.HDF5MDDataBlock;
-import ch.systemsx.cisd.hdf5.IHDF5Reader;
-import ch.systemsx.cisd.hdf5.IHDF5SimpleReader;
+public class APSSector20 extends FloatMatrixHDF5DataSource {
 
-public class APSSector20 extends SimpleHDF5DataSource {
+	//detector datasets are numbered: "/2D Scan/MCA 1", "/2D Scan/MCA 2", ...
+	private static final String BASE = "/2D Scan/MCA ";
+	private static final String FIRST = BASE + "1";
+	private static final String NAME = "APS Sector 20";
+	private static final String DESC = "HDF5 Data from Sector 20 of the APS Synchrotron";
 
-	private final static String DATA_PATH = "/2D Scan/MCA 1";
 	private SimplePhysicalSize physical;
-	
-	private HDF5DataSetInformation info;
-	private List<Iterator<HDF5MDDataBlock<MDFloatArray>>> blockLists;
-	private int rowCount, columnCount, scanSize; 
-		
+
 	public APSSector20() {
-		super(DATA_PATH, "APS Sector 20", "HDF5 Data from Sector 20 of the APS Synchrotron");
+		//axis order "yxz": dims are [row=height=y, column=width=x, channels=z]
+		//data paths are discovered dynamically, so use the pathless constructor
+		super("yxz", NAME, DESC);
 	}
 
 	@Override
 	public String pluginVersion() {
-		return "1.4";
+		return "2.0";
 	}
-	
+
 	@Override
 	public String pluginUUID() {
 		return "40cb5bfc-6ee3-4972-928f-f5bafd093e91";
 	}
-	
+
 	@Override
-	public void read(DataSourceContext ctx) throws DataSourceReadException, IOException, InterruptedException {
-		List<DataInputAdapter> paths = ctx.inputs();
-		
-		if (paths.size() != 1) {
-			throw new UnsupportedOperationException();
-		}
-		super.read(ctx);
-		readPhysicalSize(paths.get(0));
+	public FileFormat getFileFormat() {
+		return new SimpleHDF5FileFormat(
+				Arrays.asList(FIRST, "/2D Scan/X Positions", "/2D Scan/Y Positions"), NAME, DESC);
 	}
-	
+
+	/**
+	 * Discover the MCA detector datasets ("/2D Scan/MCA 1", "MCA 2", ...). The base
+	 * class sums the returned data paths together, reproducing the old per-detector merge.
+	 */
 	@Override
-	protected DataSize getDataSize(List<DataInputAdapter> paths, HDF5DataSetInformation info) {
-		long[] dimensions = info.getDimensions();
-		SimpleDataSize dataSize = new SimpleDataSize();
-		dataSize.setDataHeight((int) dimensions[0]);
-		dataSize.setDataWidth((int) dimensions[1]);
-		return dataSize;
-	}
-
-	
-	@Override
-	protected void readFile(DataInputAdapter path, int filenum) throws DataSourceReadException, IOException, InterruptedException {
-		String entry = "/2D Scan/MCA 1";
-		IHDF5Reader reader = HDF5Factory.openForReading(path.getAndEnsurePath().toFile());
-		
-		info = reader.getDataSetInformation(entry);
-		rowCount = (int) info.getDimensions()[0];
-		columnCount = (int) info.getDimensions()[1];
-		scanSize = (int) info.getDimensions()[2];
-				
-		blockLists = getBlockLists(reader);
-		
-
-		
-		//This format stores uses data blocks which each store 1 row
-		
-		for (int row = 0; row < rowCount; row++) {
-			float[] rowData = readRow(reader, row);
-						
-			for (int column = 0; column < columnCount; column++) {
-				float[] scan = Arrays.copyOfRange(rowData, (int)(column*scanSize), (int)((column+1)*scanSize));
-				super.submitScan((int)(row*columnCount+column), new ArraySpectrum(scan, false));
+	protected List<String> getDataPaths(List<DataInputAdapter> paths) {
+		try (HDFReader reader = getReader(paths.get(0))) {
+			List<String> dataPaths = new ArrayList<>();
+			for (int n = 1; reader.exists(BASE + n); n++) {
+				dataPaths.add(BASE + n);
 			}
-			
-			if (getInteraction().checkReadAborted()) {
-				return;
-			}
-			
-		}
-
-
-	}
-	
-	private List<Iterator<HDF5MDDataBlock<MDFloatArray>>> getBlockLists(IHDF5Reader reader) {
-		List<Iterator<HDF5MDDataBlock<MDFloatArray>>> blockList = new ArrayList<>();
-		String base = "/2D Scan/MCA ";
-		
-		int entryNumber = 1;
-		while (true) {
-			String entry = base + entryNumber;
-			if (!reader.exists(entry)) {
-				return blockList;
-			}
-			blockList.add(reader.float32().getMDArrayNaturalBlocks(entry).iterator());
-			entryNumber++;
+			return dataPaths;
+		} catch (IOException e) {
+			OneLog.log(Level.SEVERE, "Failed to detect MCA datasets", e);
+			return List.of();
 		}
 	}
-	
-	private float[] readRow(IHDF5Reader reader, int row) {
-		float[] rowData = new float[scanSize * columnCount];
-		
-		//merge each extra MCA Entry into this data array for the row
-		for (Iterator<HDF5MDDataBlock<MDFloatArray>> MCABlockList : blockLists) {
-			float[] MCARowData = MCABlockList.next().getData().getAsFlatArray();
-			for (int i = 0; i < rowData.length; i++) {
-				rowData[i] += MCARowData[i];
-			}
-		}
-		return rowData;
-	}
-	
 
-	private void readPhysicalSize(DataInputAdapter path) throws IOException {
-		IHDF5SimpleReader reader = HDF5Factory.openForReading(path.getAndEnsurePath().toFile());
-		float[] ypos = reader.readFloatArray("/2D Scan/Y Positions");
-		float[] xpos = reader.readFloatArray("/2D Scan/X Positions");
-		
-		physical = new SimplePhysicalSize(SISize.um);
-		
-		int index = 0;
-		//xpos holds position values for all points, ypos only holds position information per row
-		for (int x = 0; x < xpos.length; x++) {
-			int y = (int) Math.floor(x / columnCount);
-			physical.putPoint(index++, new Coord<>(xpos[x], ypos[y]));
-		}
-		
-	}
-	
 	@Override
 	public Optional<PhysicalSize> getPhysicalSize() {
 		return Optional.ofNullable(physical);
+	}
+
+	@Override
+	protected void readMatrixMetadata(HDFReader reader, int channels) {
+		int width = dataSize.getDataDimensions().x;
+		int height = dataSize.getDataDimensions().y;
+
+		//X Positions holds one value per point (flat index); Y Positions holds one value per row
+		float[] xpos = reader.readFloatArray("/2D Scan/X Positions");
+		float[] ypos = reader.readFloatArray("/2D Scan/Y Positions");
+
+		physical = new SimplePhysicalSize(SISize.um);
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int index = y * width + x;
+				physical.putPoint(index, new Coord<>(xpos[index], ypos[y]));
+			}
+		}
 	}
 
 }

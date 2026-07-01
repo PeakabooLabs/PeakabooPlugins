@@ -15,7 +15,6 @@
 	<url>http://maven.apache.org</url>
 
 	<modules>
-		<module>GenericJHDF</module>
 		<module>APSSector20</module>
 		<module>APSSector20BMLabView</module>
 		<module>APSSector11</module>
