@@ -79,11 +79,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.peakaboo.plugins</groupId>
-			<artifactId>GenericJHDF</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.peakaboo.plugins</groupId>
 			<artifactId>Horiba5200</artifactId>
 			<version>${project.version}</version>
 		</dependency>
