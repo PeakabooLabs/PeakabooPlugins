@@ -14,6 +14,11 @@
 	<packaging>pom</packaging>
 	<url>http://maven.apache.org</url>
 
+	<properties>
+		<!-- Where data source plugin jars are stored to match libpeakaboo structure. -->
+		<plugin.output.dir>${project.basedir}/../../Plugins/DataSource</plugin.output.dir>
+	</properties>
+
 	<modules>
 		<module>APSSector20</module>
 		<module>APSSector20BMLabView</module>
