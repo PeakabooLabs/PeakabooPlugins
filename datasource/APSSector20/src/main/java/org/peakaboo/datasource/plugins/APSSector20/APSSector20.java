@@ -82,12 +82,14 @@ public class APSSector20 extends FloatMatrixHDF5DataSource {
 		float[] xpos = reader.readFloatArray("/2D Scan/X Positions");
 		float[] ypos = reader.readFloatArray("/2D Scan/Y Positions");
 
+		// Position arrays may be shorter than the MCA grid (eg a partial scan), so we only
+		// record the points that have positions rather than failing the whole read
 		physical = new SimplePhysicalSize(SISize.um);
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				int index = y * width + x;
-				physical.putPoint(index, new Coord<>(xpos[index], ypos[y]));
-			}
+		int points = Math.min(xpos.length, width * height);
+		for (int index = 0; index < points; index++) {
+			int y = index / width;
+			if (y >= ypos.length) { break; }
+			physical.putPoint(index, new Coord<>(xpos[index], ypos[y]));
 		}
 	}
 
