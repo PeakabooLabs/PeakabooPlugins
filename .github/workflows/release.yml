@@ -59,7 +59,7 @@ jobs:
     # With no tag, `gh release download` takes the latest release.
     - name: Download the manifest tooling jar
       env:
-        GH_TOKEN: ${{ secrets.REPOSITORY_TOOLING_READ_PAT }}
+        GH_TOKEN: ${{ secrets.PEAKABOOPRO_READ_PAT }}
         TOOLING_RELEASE: ${{ inputs.tooling_release }}
       run: |
         mkdir -p tooling
